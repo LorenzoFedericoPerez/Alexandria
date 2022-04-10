@@ -1,11 +1,8 @@
 package com.generation.controller.main;
 
-import static com.generation.common.Console.ask;
-import static com.generation.common.Console.askInt;
-import static com.generation.common.Console.print;
+import static com.generation.common.Console.*;
 
 import java.util.List;
-import java.util.Scanner;
 
 import com.generation.model.dao.BookDAOcsv;
 import com.generation.model.entities.Book;
@@ -184,7 +181,7 @@ public class Main {
             String title = ask("Insert title: ");
             String genre = ask("Insert genre: ");
             int pages = askInt("Insert pages: ");
-            double price = _askDouble("Insert price: ");
+            double price = askDouble("Insert price: ");
 
             return dao.insertBook(isbn, author, title, genre, pages, price);
         } catch (Exception e) 
@@ -205,15 +202,6 @@ public class Main {
             e.printStackTrace();
             return "Error during file rewriting. ";
         }
-    }
-
-    private static double _askDouble(String ask)
-    {
-        print(ask);
-        Scanner dr = new Scanner(System.in);
-        double number = Double.parseDouble(dr.nextLine());
-        dr.close();
-        return number;
     }
     
 }
