@@ -1,13 +1,13 @@
 package com.generation.model.entities;
 
-public class Book implements Validable
+public class Book implements Validable, CSV
 {
 
     private static final String[] VALIDGENRES = 
                 {   "Epic poem","Novel",
                     "Shonen","Seinen",
                     "Sci-fi","Scifi",
-                    "Thriller","Yellow",
+                    "Thriller","Crime novel",
                     "Biography","Horror",
                     "Adventure"
                 };
@@ -134,6 +134,12 @@ public class Book implements Validable
             res += "Invalid title\n";
 
         return res;
+    }
+
+    @Override
+    public String toCSV() 
+    { 
+        return isbn+","+author+","+title+","+genre+","+pages+","+price;
     }
     
 }

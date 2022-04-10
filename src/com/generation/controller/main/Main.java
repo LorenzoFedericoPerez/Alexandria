@@ -1,20 +1,24 @@
 package com.generation.controller.main;
 
-import static com.generation.common.Console.*;
+import static com.generation.common.Console.ask;
+import static com.generation.common.Console.askInt;
+import static com.generation.common.Console.print;
 
-import java.security.NoSuchAlgorithmException;
-import java.util.*;
+import java.util.List;
+import java.util.Scanner;
 
 import com.generation.model.dao.BookDAOcsv;
 import com.generation.model.entities.Book;
+import com.generation.model.entities.User;
 import com.generation.model.view.BookView;
 
 public class Main {
 
     static BookDAOcsv dao;
     static BookView view;
+    static User user;
 
-    public static void main(String[] args) throws NoSuchAlgorithmException 
+    public static void main(String[] args) throws Exception 
     {
         print("Welcome to the Alexandria Library");
         String res = "", cmd = "";
@@ -26,29 +30,28 @@ public class Main {
         }
         catch(Exception e)
         {
-            print("Files not found");
+            print("Files not found.");
             System.exit(1);
         }
         
-
-        boolean login = false;
+        
         do
-        {
-            print("Insert your credentials: (write \"stop\" to quit the program.)");
-            String username = ask("Insert username: ");
-            if(username.equalsIgnoreCase("stop"))
-            {
-                print("Bye");
-                System.exit(1);
-            }
+		{
+            print("Insert your credentials: (write \"bye\" to quit the program.)");
+			String username = ask("Insert username: ");
+			if(username.equalsIgnoreCase("bye")) 
+			{
+				print("Goodbye");
+				System.exit(1);
+			}
+			String password = ask("Insert password");
+			user = dao.login(username,password);
 
-            String password = ask("Insert password: ");
-            login = dao.login(username, password);
-            if(login==false)
-                print("Wrong credentials, try again.\n");
-        }
-        while(login==false);
-
+			if(user==null)
+			{
+				print("Wrong credentials, try again.\n");
+			}
+		}while(user==null);
         
         print("Welcome to the library.\n"); 
 
@@ -61,7 +64,11 @@ public class Main {
                 "2 to see all books of a particular genre\n"  +
                 "3 to search for a particular isbn\n"           +
                 "4 to insert a new book into the library\n"        +
-                "5 to delete a book from the library\n"
+                "5 to delete a book from the library\n"             +
+                "6 to see your data\n"                                +
+                "7 to see insert an user\n"                                +
+                "8 to see delete an user\n"                                +
+                "bye to close the program\n"
             );
 
             switch(cmd)
@@ -86,6 +93,18 @@ public class Main {
                     res = _deleteBook();
                 break;
 
+                case "6":
+                    res = _viewUser();
+                break;
+
+                case "7":
+                    res = _InsertUser();
+                break;
+
+                case "8":
+                    res = _deleteUser();
+                break;
+
                 case "bye":
                     res = "Bye.";
                 break;
@@ -97,14 +116,38 @@ public class Main {
             print(res);
         }
         while(res!="Bye.");
-        
+    }
+
+    private static String _deleteUser() throws Exception 
+    {
+        String loginUsername = user.getUsername();
+        String username = ask("Insert deleting user's username: ");
+        return dao.deleteUser(loginUsername, username);
+    }
+
+    private static String _InsertUser() throws Exception 
+    {
+        String ssn = ask("Insert ssn");
+        String name = ask("Insert name: ");
+        String surname = ask("Insert surname: ");
+        String email = ask("Insert email: ");
+        String dob = ask("Insert date of birth (xx/xx/xxxx format): ");
+        String gender = ask("Insert gender (M or F): ");
+        String username = ask("Insert username: ");
+        String password = ask("Insert password (Min. 1 upper case char, 1 lower case char, 1 number and 1 special char; 5 to 20 chars): ");
+        return dao.insertUser(ssn, name, surname, email, dob, gender, username, password);
+    }
+
+    private static String _viewUser() 
+    {
+        return view.renderUser(user);
     }
 
 
     private static String _getBooks() 
     {
         List<Book> res = dao.getBooks();
-        return res.size()>0 ?
+        return !res.isEmpty() ?
             view.renderBooks(res)
             :
             "Couldn't find any book.";
@@ -115,7 +158,7 @@ public class Main {
     {
         String genre = ask("Insert genre: ");
         List<Book> res = dao.getBooks(genre);
-        return res!=null ?
+        return !res.isEmpty() ?
                 view.renderBooks(res)
                 :
                 "Couldn't find any book with the genre "+genre+", try again.";
@@ -131,10 +174,10 @@ public class Main {
                 "Couldn't find any book with the isbn "+isbn+", try again.";
     }
 
-
-    private static String _insertBook() 
-    {
-        try
+    //when this terminates program closes and get java.util.NoSuchElementException: No line found
+    private static String _insertBook()
+    { 
+        try 
         {
             String isbn = ask("Insert isbn: ");
             String author = ask("Insert author: ");
@@ -143,24 +186,30 @@ public class Main {
             int pages = askInt("Insert pages: ");
             double price = _askDouble("Insert price: ");
 
-            return dao.insert(isbn, author, title, genre, pages, price);
-        }
-        catch(NumberFormatException e)
+            return dao.insertBook(isbn, author, title, genre, pages, price);
+        } catch (Exception e) 
         {
-            return "Error during the input, try again";
+            return "Error during insertion.";
         }
-        
     }
 
     private static String _deleteBook() 
     {
-        String isbn = ask("Insert isbn: ");
-        return dao.delete(isbn);
+        try
+        {
+            String isbn = ask("Insert isbn: ");
+            return dao.deleteBook(isbn);
+        }  
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            return "Error during file rewriting. ";
+        }
     }
 
     private static double _askDouble(String ask)
     {
-        System.out.print(ask);
+        print(ask);
         Scanner dr = new Scanner(System.in);
         double number = Double.parseDouble(dr.nextLine());
         dr.close();

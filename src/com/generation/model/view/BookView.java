@@ -33,7 +33,7 @@ public class BookView
         String res = "";
         res +=  "SSN: " + u.getSsn().getContent() + ", Name: " + u.getName() + ", Surname: " + u.getSurname() + 
                 ", Email: " + u.getEmail().getContent() + ", Date of birth: " + u.getDob() + ", Gender: " + u.getGender() +
-                "\nUsername: " + u.getUsername() +"\n";
+                "\nUsername: " + u.getUsername() +", Password: "+u.getPassword().getContent();
         return res;
     }
 

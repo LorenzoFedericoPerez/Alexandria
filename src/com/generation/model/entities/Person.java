@@ -3,7 +3,7 @@ package com.generation.model.entities;
 import com.generation.common.*;
 import java.util.Calendar;
 
-public abstract class Person implements Validable
+public abstract class Person implements Validable, CSV
 {
     SSN ssn;
     Email email;
@@ -102,6 +102,12 @@ public abstract class Person implements Validable
             res +="Invalid gender\n";
         
         return res;
+    }
+
+    @Override
+    public String toCSV()
+    {
+        return ssn.getContent()+","+name+","+surname+","+email.getContent()+","+dob+","+gender;
     }
 
 }

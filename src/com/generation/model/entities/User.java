@@ -14,8 +14,6 @@ public class User extends Person
         super(ssn, name, surname, email, dob, gender);
         this.username = username;
         this.password = new Password(password);
-        //password encrypted with md5 encryption algorithm
-        this.password.encrypt();
     }
 
     public String getUsername() 
@@ -33,9 +31,9 @@ public class User extends Person
         return password;
     }
 
-    public void setPassword(Password password) 
+    public void setPassword(String password) 
     {
-        this.password = password;
+        this.password.setContent(password);
     }
 
     @Override
@@ -46,6 +44,12 @@ public class User extends Person
             res+="Invalid username\n";
         
         return res;
+    }
+
+    @Override
+    public String toCSV() 
+    {
+        return super.toCSV()+","+username+","+password.getContent();
     }
 
     

@@ -106,7 +106,7 @@ public class BookDAOcsv
      * @return true || false
      * @throws NoSuchAlgorithmException
      */
-    public boolean login(String username, String password) throws NoSuchAlgorithmException
+    public User login(String username, String password) throws NoSuchAlgorithmException
     {
         User user =    getUsers()
                     .stream()
@@ -118,10 +118,10 @@ public class BookDAOcsv
             Password pw = new Password(password);
             String encryptedPassword = pw.encrypt();
             if(user.getPassword().getContent().equals(encryptedPassword))
-                return true;
+                return user;
         }
 
-        return false;
+        return null;
     }
 
     /**
@@ -186,8 +186,9 @@ public class BookDAOcsv
 	 * restituire "ALREADYPRESENT" se c'è già.
 	 * @param book
 	 * @return
+	 * @throws Exception
 	 */
-	public String insert(String isbn, String author, String title, String genre, int pages, double price)
+	public String insertBook(String isbn, String author, String title, String genre, int pages, double price) throws Exception
 	{
         Book temp = new Book(isbn, author, title, genre, pages, price);
         if(!temp.isValid())
@@ -197,6 +198,7 @@ public class BookDAOcsv
             return "Already present, try again.";
 
         content.add(temp);
+        _recreateBooksFile();
 		return "Book registered correctly.";
 	}
 	
@@ -204,15 +206,104 @@ public class BookDAOcsv
 	 * restituisce l'esito dell'eliminazione
 	 * @param book
 	 * @return
+	 * @throws Exception
 	 */
-	public String delete(String isbn)
+	public String deleteBook(String isbn) throws Exception
 	{
         Book temp = getBook(isbn);
         if(temp==null)
             return "Book not found, try again";
         
         content.remove(temp);
+        _recreateBooksFile();
 		return "Book deleted successfully";
 	}
+
+    public String insertUser
+    (
+        String ssn, String name, String surname, String email, String dob, String gender, 
+        String username, String password
+    ) throws Exception  
+    {
+        Password pw = new Password(password);
+        if(pw.isValid())
+        {
+            User temp = new User(ssn, name, surname, email, dob, gender, username, password);
+
+            if(!temp.isValid() || username.contains(","))
+                return "Invalid user, try again.";
+        
+            if(isAlreadyPresent(temp))
+                return "Already present, try again.";
+            
+            String encryptedPassword = temp.getPassword().encrypt();
+            temp.setPassword(encryptedPassword);
+            users.add(temp);
+            _recreateUsersFile();
+            return "User registered correctly.";
+        }
+        else
+            return "Invalid password, try again.";
+    }
+
+    /**
+     * 
+     * @param loginUsername
+     * @param username
+     * @return 
+     * @throws Exception
+     */
+    public String deleteUser(String loginUsername, String username) throws Exception
+    {
+        if(loginUsername.equalsIgnoreCase(username))
+            return "You can't delete yourself, try again.";
+
+        for(User u:users)
+            if(u.getUsername().equalsIgnoreCase(username))
+            {
+                users.remove(u);
+                _recreateUsersFile();
+                return "User removed successfully.";
+            }
+
+        return "User not found, try again";
+    }
     
+    /**
+     * Rewrite users file with the current users list.
+     * @throws Exception
+     */
+    public void _recreateUsersFile() throws Exception
+    {
+        String res = "";
+		FileWriter writer = new FileWriter(usersFileName);
+    
+        for(int i=0;i<getUsers().size();i++)
+        {
+            res += getUsers().get(i).toCSV();
+            res += i != getUsers().size()-1 ? "\n" : "";
+        }
+
+        writer.write(res);
+        writer.close();
+    }
+
+    /**
+     * Rewrite books file with the current books list.
+     * @throws Exception
+     */
+    public void _recreateBooksFile() throws Exception
+    {
+        String res = "";
+        FileWriter writer = new FileWriter(booksFileName);
+    
+        for(int i=0;i<getBooks().size();i++)
+        {
+            res += getBooks().get(i).toCSV();
+            res += i != getBooks().size()-1 ? "\n" : "";
+        }
+
+        writer.write(res);
+        writer.close();
+    }
 }
