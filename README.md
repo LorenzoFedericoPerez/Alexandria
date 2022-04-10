@@ -1,4 +1,5 @@
 # Alexandria
 
-Masterclass project\n
+Masterclass project
+
 Create a programs that manages a library.
