@@ -1,4 +1,4 @@
-package com.generation.model.dao;
+package com.generation.model.Manager;
 
 import java.io.File;
 import java.io.FileWriter;

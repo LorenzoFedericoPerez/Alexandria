@@ -1,4 +1,4 @@
-package com.generation.model.dao;
+package com.generation.model.Manager;
 
 import java.io.FileWriter;
 import java.security.NoSuchAlgorithmException;
