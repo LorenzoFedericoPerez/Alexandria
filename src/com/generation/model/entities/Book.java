@@ -86,14 +86,6 @@ public class Book implements Validable, CSV
 		this.price = price;
 	}
 
-    public boolean isValid()
-    {
-        return isbn!=null && !isbn.isBlank() &&
-                author!=null && !author.isBlank() &&
-                title!=null && !title.isBlank() &&
-                hasValidGenre();
-    }
-
 	private boolean hasValidGenre() 
     {
         for(int i=0;i<VALIDGENRES.length;i++)
@@ -103,12 +95,6 @@ public class Book implements Validable, CSV
         return false;
     }
 
-    @Override
-	public String toString() 
-    {
-		return "Book [author=" + author + ", isbn=" + isbn + ", genre=" + genre + ", pages=" + pages + ", price="
-				+ price + ", title=" + title + "]";
-	}
 
     @Override
     public String getErrors() 
@@ -139,7 +125,7 @@ public class Book implements Validable, CSV
     @Override
     public String toCSV() 
     { 
-        return isbn+","+author+","+title+","+genre+","+pages+","+price;
+        return "Book"+isbn+","+author+","+title+","+genre+","+pages+","+price;
     }
     
 }

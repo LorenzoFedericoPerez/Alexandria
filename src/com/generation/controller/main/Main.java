@@ -1,17 +1,24 @@
 package com.generation.controller.main;
 
-import static com.generation.common.Console.*;
+import static com.generation.common.Console.ask;
+import static com.generation.common.Console.askDouble;
+import static com.generation.common.Console.askInt;
+import static com.generation.common.Console.print;
 
 import java.util.List;
 
-import com.generation.model.dao.BookDAOcsv;
+import com.generation.model.dao.ILibraryMNG;
+import com.generation.model.dao.LibraryMNGcsv;
 import com.generation.model.entities.Book;
 import com.generation.model.entities.User;
+import com.generation.model.language.ILanguage;
+import com.generation.model.language.LanguageFactory;
 import com.generation.model.view.BookView;
 
 public class Main {
 
-    static BookDAOcsv dao;
+    static ILibraryMNG mng;
+    static ILanguage language = LanguageFactory.getLanguage("ITA");
     static BookView view;
     static User user;
 
@@ -23,14 +30,14 @@ public class Main {
 
         try
         {
-            dao = new BookDAOcsv("books.csv", "users.csv");
+            mng = new LibraryMNGcsv("books.csv", "users.csv");
         }
         catch(Exception e)
         {
             print("Files not found.");
             System.exit(1);
         }
-        
+
         
         do
 		{
@@ -42,7 +49,7 @@ public class Main {
 				System.exit(1);
 			}
 			String password = ask("Insert password");
-			user = dao.login(username,password);
+			user = mng.login(username,password);
 
 			if(user==null)
 			{
@@ -54,19 +61,7 @@ public class Main {
 
         do
         {
-            cmd = ask
-            (
-                "Insert a command:\n"                                       +
-                "1 to see all books\n"                               +
-                "2 to see all books of a particular genre\n"  +
-                "3 to search for a particular isbn\n"           +
-                "4 to insert a new book into the library\n"        +
-                "5 to delete a book from the library\n"             +
-                "6 to see your data\n"                                +
-                "7 to see insert an user\n"                                +
-                "8 to see delete an user\n"                                +
-                "bye to close the program\n"
-            );
+            cmd = ask(language.translate("ASKCOMMAND"));
 
             switch(cmd)
             {
@@ -91,15 +86,15 @@ public class Main {
                 break;
 
                 case "6":
-                    res = _viewUser();
-                break;
-
-                case "7":
                     res = _InsertUser();
                 break;
 
-                case "8":
+                case "7":
                     res = _deleteUser();
+                break;
+                
+                case "8":
+                    res = _viewUser();
                 break;
 
                 case "bye":
@@ -119,7 +114,7 @@ public class Main {
     {
         String loginUsername = user.getUsername();
         String username = ask("Insert deleting user's username: ");
-        return dao.deleteUser(loginUsername, username);
+        return mng.deleteUser(loginUsername, username);
     }
 
     private static String _InsertUser() throws Exception 
@@ -132,7 +127,7 @@ public class Main {
         String gender = ask("Insert gender (M or F): ");
         String username = ask("Insert username: ");
         String password = ask("Insert password (Min. 1 upper case char, 1 lower case char, 1 number and 1 special char; 5 to 20 chars): ");
-        return dao.insertUser(ssn, name, surname, email, dob, gender, username, password);
+        return mng.insertUser(ssn, name, surname, email, dob, gender, username, password);
     }
 
     private static String _viewUser() 
@@ -143,7 +138,7 @@ public class Main {
 
     private static String _getBooks() 
     {
-        List<Book> res = dao.getBooks();
+        List<Book> res = mng.getBooks();
         return !res.isEmpty() ?
             view.renderBooks(res)
             :
@@ -154,7 +149,7 @@ public class Main {
     private static String _getBooksByGenre() 
     {
         String genre = ask("Insert genre: ");
-        List<Book> res = dao.getBooks(genre);
+        List<Book> res = mng.getBooks(genre);
         return !res.isEmpty() ?
                 view.renderBooks(res)
                 :
@@ -164,14 +159,13 @@ public class Main {
     private static String _getBookByIsbn() 
     {
         String isbn = ask("Insert isbn: ");
-        Book res = dao.getBook(isbn);
+        Book res = mng.getBook(isbn);
         return res!=null ?
                 view.renderBook(res)
                 :
                 "Couldn't find any book with the isbn "+isbn+", try again.";
     }
 
-    //when this terminates program closes and get java.util.NoSuchElementException: No line found
     private static String _insertBook()
     { 
         try 
@@ -183,7 +177,7 @@ public class Main {
             int pages = askInt("Insert pages: ");
             double price = askDouble("Insert price: ");
 
-            return dao.insertBook(isbn, author, title, genre, pages, price);
+            return mng.insertBook(isbn, author, title, genre, pages, price);
         } catch (Exception e) 
         {
             return "Error during insertion.";
@@ -195,7 +189,7 @@ public class Main {
         try
         {
             String isbn = ask("Insert isbn: ");
-            return dao.deleteBook(isbn);
+            return mng.deleteBook(isbn);
         }  
         catch(Exception e)
         {
