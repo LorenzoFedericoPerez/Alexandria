@@ -7,8 +7,10 @@ import static com.generation.common.Console.print;
 
 import java.util.List;
 
-import com.generation.model.dao.ILibraryMNG;
-import com.generation.model.dao.LibraryMNGcsv;
+import javax.naming.NameNotFoundException;
+
+import com.generation.model.Manager.ILibraryMNG;
+import com.generation.model.Manager.LibraryMNGcsv;
 import com.generation.model.entities.Book;
 import com.generation.model.entities.User;
 import com.generation.model.language.ILanguage;
@@ -18,13 +20,26 @@ import com.generation.model.view.BookView;
 public class Main {
 
     static ILibraryMNG mng;
-    static ILanguage language = LanguageFactory.getLanguage("ITA");
+    static String[] VALIDLANGCODES = {"ITA", "ENG", "ABR"};
+    static ILanguage language;
     static BookView view;
     static User user;
 
+
     public static void main(String[] args) throws Exception 
     {
-        print("Welcome to the Alexandria Library");
+        print("Welcome.");
+        do
+        {
+            language = _selectLanguage();
+            if(language == null)
+                print("Invalid code, try again.\n");
+        }
+        while(language == null);
+
+        
+
+        print(language.translate("WELCOMELIBRARY"));
         String res = "", cmd = "";
         view = new BookView();
 
@@ -34,21 +49,21 @@ public class Main {
         }
         catch(Exception e)
         {
-            print("Files not found.");
+            print(language.translate("FILENOTFOUND"));
             System.exit(1);
         }
-
+        
         
         do
 		{
-            print("Insert your credentials: (write \"bye\" to quit the program.)");
-			String username = ask("Insert username: ");
-			if(username.equalsIgnoreCase("bye")) 
+            language.translate("ASKCREDENTIALS");
+			String username = ask(language.translate("ASKUSERNAME")+"\n"+language.translate("BYETOQUIT"));
+			if(username.equalsIgnoreCase("close")) 
 			{
 				print("Goodbye");
 				System.exit(1);
 			}
-			String password = ask("Insert password");
+			String password = ask(language.translate("ASKPASSWORD"));
 			user = mng.login(username,password);
 
 			if(user==null)
@@ -57,7 +72,7 @@ public class Main {
 			}
 		}while(user==null);
         
-        print("Welcome to the library.\n"); 
+        print(language.translate("WELCOMESYSTEM")); 
 
         do
         {
@@ -145,7 +160,6 @@ public class Main {
             "Couldn't find any book.";
     }
 
-
     private static String _getBooksByGenre() 
     {
         String genre = ask("Insert genre: ");
@@ -196,6 +210,25 @@ public class Main {
             e.printStackTrace();
             return "Error during file rewriting. ";
         }
+    }
+
+    private static ILanguage _selectLanguage()
+    {
+        String langcode = ask
+        (
+            "Please, select language:\n"+
+            "ITA for Italian\n" +
+            "ENG for English\n" +
+            "ABR for Abruzzese\n"
+        );
+
+        for(String s: VALIDLANGCODES)
+            if(langcode.equalsIgnoreCase(s))
+            {
+                return LanguageFactory.getLanguage(s);
+            }
+
+        return null;
     }
     
 }

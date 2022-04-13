@@ -140,14 +140,14 @@ public class LibraryMNGcsv implements ILibraryMNG
 	{
         Book temp = new Book(isbn, author, title, genre, pages, price);
         if(!temp.isValid())
-            return "Invalid book, try again.";
+            return "INVALIDBOOK";
         
         if(getBook(temp.getIsbn())!=null)
-            return "Already present, try again.";
+            return "BOOKALREADYPRESENT";
 
         content.add(temp);
         _recreateBooksFile();
-		return "Book registered correctly.";
+		return "BOOKREGISTERED";
 	}
 
     /**
@@ -160,11 +160,11 @@ public class LibraryMNGcsv implements ILibraryMNG
 	{
         Book temp = getBook(isbn);
         if(temp==null)
-            return "Book not found, try again";
+            return "BOOKNOTFOUND";
         
         content.remove(temp);
         _recreateBooksFile();
-		return "Book deleted successfully";
+		return "BOOKDELETED";
 	}
 
     /**
@@ -194,13 +194,13 @@ public class LibraryMNGcsv implements ILibraryMNG
                 return temp.getErrors();
         
             if(isAlreadyPresent(temp))
-                return "Already present, try again.";
+                return "USERALREADYPRESENT";
             
             String encryptedPassword = temp.getPassword().encrypt();
             temp.setPassword(encryptedPassword);
             users.add(temp);
             _recreateUsersFile();
-            return "User registered correctly.";
+            return "USERREGISTERED";
         }
         else
             return temp.getErrors();
@@ -216,17 +216,17 @@ public class LibraryMNGcsv implements ILibraryMNG
     public String deleteUser(String loginUsername, String username) throws Exception
     {
         if(loginUsername.equalsIgnoreCase(username))
-            return "You can't delete yourself, try again.";
+            return "CANTEXEC";
 
         for(User u:getUsers())
             if(u.getUsername().equalsIgnoreCase(username))
             {
                 users.remove(u);
                 _recreateUsersFile();
-                return "User removed successfully.";
+                return "USERDELETED";
             }
 
-        return "User not found, try again";
+        return "USERNOTFOUND";
     }
 
     /**
@@ -266,6 +266,5 @@ public class LibraryMNGcsv implements ILibraryMNG
         writer.write(res);
         writer.close();
     }
-
 
 }

@@ -2,7 +2,6 @@ package com.generation.model.language;
 
 public abstract class LanguageFactory 
 {
-    public LanguageFactory(){}
 
     public static ILanguage getLanguage(String code)
     {

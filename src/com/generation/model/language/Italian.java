@@ -18,15 +18,30 @@ public class Italian implements ILanguage
                                     "6 per vedere i tuoi dati personali\n"                      +
                                     "7 per inserire un nuovo utente nel sistema\n"              +
                                     "8 per eliminare un utente\n"                               +
-                                    "Ciao per chiudere il programma\n");
+                                    "close per chiudere il programma\n");
         dictionary.put("USERNOTFOUND","Utente non trovato, riprova.");
         dictionary.put("BOOKNOTFOUND","Libro non trovato, riprova.");
         dictionary.put("INVALIDBOOK","Libro non valido, riprova.");
         dictionary.put("INVALIDDATA","Dati non validi, riprova.");
         dictionary.put("INVALIDCREDENTIALS","Credenziali non valide, riprova.");
         dictionary.put("ASKCREDENTIALS","Inserire le credenziali d'accesso.");
-        dictionary.put("BYE","Ciao");
-    }
+        dictionary.put("ASKUSERNAME","Inserire l'username: ");
+        dictionary.put("ASKPASSWORD","Inserire la password: ");
+        dictionary.put("BOOKALREADYPRESENT","Libro già presente, riprova.");
+        dictionary.put("BOOKREGISTERED","Libro registrato correttamente.");
+        dictionary.put("BOOKDELETED","Libro cancellato correttamente.");
+        dictionary.put("USERREGISTERED","Utente registrato correttamente.");
+        dictionary.put("USERDELETED","Utente eliminato correttamente.");
+        dictionary.put("USERNOTFOUND","Utente non trovato, riprova.");
+        dictionary.put("WELCOMELIBRARY","Benvenuto nella libreria!");
+        dictionary.put("WELCOMESYSTEM","Benvenuto nel sistema della libreria!");
+        dictionary.put("FILENOTFOUND","File non trovato/i.");
+        dictionary.put("","");
+        dictionary.put("","");
+        dictionary.put("CANTEXEC","C'è stato un problema, riprova.");
+        dictionary.put("USERALREADYPRESENT","Utente già presente.");
+        dictionary.put("BYETOQUIT","Scrivere close per quittare.");
+    } //dictionary.put("","");
     
     public String translate(String code)
     {
